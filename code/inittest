@@ -1,0 +1,20 @@
+#!/bin/bash /etc/rc.common
+
+START=92
+STOP=90
+USE_PROCD=1
+PROG=/usr/bin/test
+
+start_service() {
+    procd_open_instance #创建一个实例，procd认为一个应用程序可以有多个实例
+    # ubus call service list # 可以查看实例
+    procd_set_param command "$PROG" # test执行的命令是"/usr/bin/test"
+    procd_set_param respawn # 定义respawn参数，告诉procd当test程序退出后尝试进行重启
+    procd_append_param respawn 3600 # 添加命令的参数
+    # ${respawn_threshold:-3600} ${respawn_timeout:-5} ${respawn_retry:-5}
+    procd_close_instance 
+}
+
+stop_service() {
+    service_stop $PROG
+}
